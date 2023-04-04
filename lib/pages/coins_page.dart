@@ -20,14 +20,31 @@ class _CoinsPageState extends State<CoinsPage> {
 
   List<CoinModel> selecteds = [];
 
+  appBarSelect() {
+    if (selecteds.isEmpty) {
+      return AppBar(
+        title: const Center(
+          child: Text('Crypto moedas'),
+        ),
+      );
+    } else {
+      return AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            setState(() {
+              selecteds = [];
+            });
+          },
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text("Crypto moedas"),
-        ),
-      ),
+      appBar: appBarSelect(),
       body: ListView.separated(
           itemBuilder: (BuildContext context, int coin) {
             return ListTile(
