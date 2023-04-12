@@ -20,5 +20,53 @@ class CoinRepository {
       acronym: "LTC",
       price: 669.90,
     ),
+    CoinModel(
+      icone: 'images/litecoin.png',
+      name: 'Litecoin',
+      acronym: "LTC",
+      price: 669.90,
+    ),
+    CoinModel(
+      icone: 'images/litecoin.png',
+      name: 'Litecoin',
+      acronym: "LTC",
+      price: 669.90,
+    ),
+    CoinModel(
+      icone: 'images/litecoin.png',
+      name: 'Litecoin',
+      acronym: "LTC",
+      price: 669.90,
+    ),
+    CoinModel(
+      icone: 'images/litecoin.png',
+      name: 'Litecoin',
+      acronym: "LTC",
+      price: 669.90,
+    ),
+    CoinModel(
+      icone: 'images/litecoin.png',
+      name: 'Litecoin',
+      acronym: "LTC",
+      price: 669.90,
+    ),
+    CoinModel(
+      icone: 'images/litecoin.png',
+      name: 'Litecoin',
+      acronym: "LTC",
+      price: 669.90,
+    ),
+    CoinModel(
+      icone: 'images/litecoin.png',
+      name: 'Litecoin',
+      acronym: "LTC",
+      price: 669.90,
+    ),
+    CoinModel(
+      icone: 'images/litecoin.png',
+      name: 'Litecoin',
+      acronym: "LTC",
+      price: 669.90,
+    ),
   ];
 }
