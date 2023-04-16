@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:crypto_bank/configs/app_settings.dart';
 import 'package:crypto_bank/models/coin_model.dart';
 import 'package:crypto_bank/pages/coin_detail_page.dart';
 import 'package:crypto_bank/repositories/coins_repositories.dart';
@@ -18,11 +19,36 @@ class CoinsPage extends StatefulWidget {
 class _CoinsPageState extends State<CoinsPage> {
   final table = CoinRepository.table;
   late FavoritesRepository favorites;
-
-  NumberFormat real = NumberFormat.compactCurrency(
-      locale: "pt-BR", decimalDigits: 2, name: "R\$");
-
   List<CoinModel> selecteds = [];
+
+  late NumberFormat real;
+  late Map<String, String> loc;
+
+  readNumberFormat() {
+    loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
+  }
+
+  changeLanguageButton() {
+    final locale = loc['locale'] == 'pt_BR' ? 'en_US' : 'pt_BR';
+    final name = loc['locale'] == 'pt_BR' ? '\$' : 'R\$';
+
+    return PopupMenuButton(
+      icon: const Icon(Icons.language),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.swap_vert),
+            title: Text('Usar $locale'),
+            onTap: () {
+              context.read<AppSettings>().setLocale(locale, name);
+              Navigator.pop(context);
+            },
+          ),
+        )
+      ],
+    );
+  }
 
   clearSelecteds() {
     setState(() {
@@ -33,6 +59,7 @@ class _CoinsPageState extends State<CoinsPage> {
   AppBar appBarSelect() {
     if (selecteds.isEmpty) {
       return AppBar(
+        actions: [changeLanguageButton()],
         title: const Center(
           child: Text('Cripto moedas'),
         ),
@@ -47,6 +74,7 @@ class _CoinsPageState extends State<CoinsPage> {
             });
           },
         ),
+        actions: [changeLanguageButton()],
         title: Center(
           child: Text(
             "${selecteds.length} selecionadas",
@@ -58,24 +86,6 @@ class _CoinsPageState extends State<CoinsPage> {
         titleTextStyle: const TextStyle(
             color: Colors.black87, fontSize: 20, fontWeight: FontWeight.bold),
       );
-    }
-  }
-
-  FloatingActionButton? floatingActionButtonState(favoritesState) {
-    if (selecteds.isNotEmpty) {
-      return FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.star),
-        label: const Text(
-          "FAVORITAR",
-          style: TextStyle(
-            letterSpacing: 0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
-    } else {
-      return null;
     }
   }
 
@@ -92,6 +102,7 @@ class _CoinsPageState extends State<CoinsPage> {
   Widget build(BuildContext context) {
     // favorite = Provider.of<FavoritesRepository>(context);
     favorites = context.watch<FavoritesRepository>();
+    readNumberFormat();
     return Scaffold(
       appBar: appBarSelect(),
       body: ListView.separated(

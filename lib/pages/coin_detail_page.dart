@@ -1,8 +1,10 @@
+import 'package:crypto_bank/configs/app_settings.dart';
 import 'package:crypto_bank/models/coin_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' show NumberFormat;
+import 'package:provider/provider.dart';
 
 class CoinDetailsPage extends StatefulWidget {
   final CoinModel coin;
@@ -17,8 +19,13 @@ class _CoinDetailsPageState extends State<CoinDetailsPage> {
   final _form = GlobalKey<FormState>();
   final _valor = TextEditingController();
 
-  NumberFormat real = NumberFormat.compactCurrency(
-      locale: "pt-BR", decimalDigits: 2, name: "R\$");
+  late NumberFormat real;
+  late Map<String, String> loc;
+
+  readNumberFormat() {
+    loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
+  }
 
   double quantity = 0.0;
 
@@ -36,6 +43,7 @@ class _CoinDetailsPageState extends State<CoinDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    readNumberFormat();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.coin.name.toString()),

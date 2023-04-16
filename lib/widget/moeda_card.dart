@@ -1,3 +1,4 @@
+import 'package:crypto_bank/configs/app_settings.dart';
 import 'package:crypto_bank/models/coin_model.dart';
 import 'package:crypto_bank/pages/coin_detail_page.dart';
 import 'package:crypto_bank/repositories/favorites_repository.dart';
@@ -14,13 +15,18 @@ class CoinCard extends StatefulWidget {
 }
 
 class _CoinCardState extends State<CoinCard> {
+  late NumberFormat real;
+  late Map<String, String> loc;
+
+  readNumberFormat() {
+    loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
+  }
+
   static Map<String, Color> valueColor = <String, Color>{
     'up': Colors.teal,
     "down": Colors.indigo
   };
-
-  NumberFormat real = NumberFormat.compactCurrency(
-      locale: "pt-BR", decimalDigits: 2, name: "R\$");
 
   openDetails() {
     Navigator.push(context,
@@ -29,6 +35,7 @@ class _CoinCardState extends State<CoinCard> {
 
   @override
   Widget build(BuildContext context) {
+    readNumberFormat();
     return Card(
       margin: const EdgeInsets.only(top: 12),
       elevation: 2,

@@ -1,7 +1,9 @@
+import 'package:crypto_bank/configs/app_settings.dart';
 import 'package:crypto_bank/repositories/favorites_repository.dart';
 import 'package:crypto_bank/widget/moeda_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({Key? key}) : super(key: key);
@@ -11,8 +13,17 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
+  late NumberFormat real;
+  late Map<String, String> loc;
+
+  readNumberFormat() {
+    loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
+  }
+
   @override
   Widget build(BuildContext context) {
+    readNumberFormat();
     return Scaffold(
       appBar: AppBar(
         title: const Center(
