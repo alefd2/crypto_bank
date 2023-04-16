@@ -1,7 +1,8 @@
 import 'package:crypto_bank/models/coin_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+// ignore: depend_on_referenced_packages
+import 'package:intl/intl.dart' show NumberFormat;
 
 class CoinDetailsPage extends StatefulWidget {
   final CoinModel coin;

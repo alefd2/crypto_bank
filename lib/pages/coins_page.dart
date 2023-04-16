@@ -3,9 +3,10 @@ import 'dart:developer';
 import 'package:crypto_bank/models/coin_model.dart';
 import 'package:crypto_bank/pages/coin_detail_page.dart';
 import 'package:crypto_bank/repositories/coins_repositories.dart';
+import 'package:crypto_bank/repositories/favorites_repository.dart';
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class CoinsPage extends StatefulWidget {
   const CoinsPage({Key? key}) : super(key: key);
@@ -16,10 +17,18 @@ class CoinsPage extends StatefulWidget {
 
 class _CoinsPageState extends State<CoinsPage> {
   final table = CoinRepository.table;
+  late FavoritesRepository favorites;
+
   NumberFormat real = NumberFormat.compactCurrency(
       locale: "pt-BR", decimalDigits: 2, name: "R\$");
 
   List<CoinModel> selecteds = [];
+
+  clearSelecteds() {
+    setState(() {
+      selecteds = [];
+    });
+  }
 
   AppBar appBarSelect() {
     if (selecteds.isEmpty) {
@@ -52,7 +61,7 @@ class _CoinsPageState extends State<CoinsPage> {
     }
   }
 
-  FloatingActionButton? floatingActionButtonState() {
+  FloatingActionButton? floatingActionButtonState(favoritesState) {
     if (selecteds.isNotEmpty) {
       return FloatingActionButton.extended(
         onPressed: () {},
@@ -81,52 +90,79 @@ class _CoinsPageState extends State<CoinsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // favorite = Provider.of<FavoritesRepository>(context);
+    favorites = context.watch<FavoritesRepository>();
     return Scaffold(
-        appBar: appBarSelect(),
-        body: ListView.separated(
-            itemBuilder: (BuildContext context, int coin) {
-              return ListTile(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(12),
+      appBar: appBarSelect(),
+      body: ListView.separated(
+          itemBuilder: (BuildContext context, int coin) {
+            return ListTile(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(12),
+                ),
+              ),
+              leading: (selecteds.contains(table[coin]))
+                  ? const CircleAvatar(
+                      child: Icon(Icons.check),
+                    )
+                  : SizedBox(
+                      width: 40,
+                      child: Image.asset(table[coin].icone),
+                    ),
+              title: Row(
+                children: [
+                  Text(
+                    table[coin].name,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                leading: (selecteds.contains(table[coin]))
-                    ? const CircleAvatar(
-                        child: Icon(Icons.check),
-                      )
-                    : SizedBox(
-                        width: 40,
-                        child: Image.asset(table[coin].icone),
-                      ),
-                title: Text(
-                  table[coin].name,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
+                  const SizedBox(
+                    width: 4,
                   ),
+                  if (favorites.list.contains(table[coin]))
+                    const Icon(Icons.star, color: Colors.amber, size: 10)
+                ],
+              ),
+              subtitle: Text(table[coin].acronym),
+              trailing: Text(
+                real.format(table[coin].price),
+              ),
+              selected: selecteds.contains(table[coin]),
+              selectedTileColor: Colors.indigo[50],
+              onLongPress: () {
+                setState(() {
+                  (selecteds.contains(table[coin]))
+                      ? selecteds.remove(table[coin])
+                      : selecteds.add(table[coin]);
+                });
+                log(table[coin].name);
+              },
+              onTap: () => showDetails(table[coin]),
+            );
+          },
+          padding: const EdgeInsets.all(16),
+          separatorBuilder: (_, __) => const Divider(),
+          itemCount: table.length),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: selecteds.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                favorites.saveAll(selecteds);
+                clearSelecteds();
+              },
+              icon: const Icon(Icons.star),
+              label: const Text(
+                "FAVORITAR",
+                style: TextStyle(
+                  letterSpacing: 0,
+                  fontWeight: FontWeight.bold,
                 ),
-                subtitle: Text(table[coin].acronym),
-                trailing: Text(
-                  real.format(table[coin].price),
-                ),
-                selected: selecteds.contains(table[coin]),
-                selectedTileColor: Colors.indigo[50],
-                onLongPress: () {
-                  setState(() {
-                    (selecteds.contains(table[coin]))
-                        ? selecteds.remove(table[coin])
-                        : selecteds.add(table[coin]);
-                  });
-                  log(table[coin].name);
-                },
-                onTap: () => showDetails(table[coin]),
-              );
-            },
-            padding: const EdgeInsets.all(16),
-            separatorBuilder: (_, __) => const Divider(),
-            itemCount: table.length),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: floatingActionButtonState());
+              ),
+            )
+          : null,
+    );
   }
 }
